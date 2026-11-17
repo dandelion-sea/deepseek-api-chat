@@ -186,4 +186,7 @@ export const en = {
   fontSizeExtraLarge: 'Extra large',
   fontSizePreviewUser: 'Hi, how does this text size look?',
   fontSizePreviewAssistant: 'This is a preview of the response text size.',
+  settingDialogAsideResponseOptionLabel: 'Response settings',
+  settingsThinkingAutoFold: 'Auto-collapse thinking',
+  settingsThinkingAutoFoldDescription: 'Collapse thinking content after it finishes',
 } satisfies Record<keyof typeof zh, string>

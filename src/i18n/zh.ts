@@ -177,4 +177,7 @@ export const zh = {
   fontSizeExtraLarge: '特大',
   fontSizePreviewUser: '你好，看看这个字号合适吗？',
   fontSizePreviewAssistant: '这是回答正文的字号预览。',
+  settingDialogAsideResponseOptionLabel: '响应设置',
+  settingsThinkingAutoFold: '自动折叠思考',
+  settingsThinkingAutoFoldDescription: '开启后，思考结束后自动折叠思考内容',
 } as const

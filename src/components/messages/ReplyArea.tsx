@@ -32,6 +32,7 @@ import { Tooltip } from '../base/Tooltip.js'
 import { Markdown } from '../markdown/Markdown.js'
 import { SiteThumbnails } from '../search/SiteLogo.js'
 import { toggleSearchPanel, useSearchPanel } from '../search/searchPanelState.js'
+import { useSettings } from '../../services/settings.js'
 import styles from './ReplyArea.module.css'
 import './thinking.markdown.css'
 
@@ -65,14 +66,20 @@ export const ReplyArea = memo(function ReplyArea({
   hasResponse: boolean
 }) {
   useTranslate()
-  const [open, setOpen] = useState(true)
+  const thinkingAutoFold = useSettings((state) => state.thinkingAutoFold)
   const titleActive = streaming && !hasResponse
+  const thinking = message.thinking ?? view.steps.some((step) => step.type === 'thinking')
+  const [open, setOpen] = useState(() => !thinkingAutoFold || titleActive)
   useTicker(titleActive, 1000)
+  useEffect(() => {
+    if (thinkingAutoFold && thinking) {
+      setOpen(titleActive)
+    }
+  }, [thinking, thinkingAutoFold, titleActive])
   if (view.steps.length === 0 && !(message.thinking && streaming)) {
     return null
   }
   // 未记录请求开关时，按是否有思考内容显示标题。
-  const thinking = message.thinking ?? view.steps.some((step) => step.type === 'thinking')
   const title = thinking ? getAreaTitle(view, streaming, Date.now(), hasResponse) : null
   const stopped = !streaming && !hasResponse
   return (

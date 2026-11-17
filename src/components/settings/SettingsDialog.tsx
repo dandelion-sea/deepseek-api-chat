@@ -7,6 +7,7 @@ import {
   IconFollowsystemOutline16,
   IconLightOutline16,
   IconSettingsOutline16,
+  IconThinkOutline16,
   IconUploadOutline14,
 } from '../base/icons.js'
 import {
@@ -24,6 +25,7 @@ import {
   setLocale,
   setLocation,
   setThemePreference,
+  setThinkingAutoFold,
   setTtsVoice,
   useSettings,
   type FontSizePreference,
@@ -52,6 +54,11 @@ const sections: { value: SettingsSection; label: TranslationKey; icon: ReactNode
     value: 'general',
     label: 'settingDialogAsideGeneralOptionLabel',
     icon: <IconSettingsOutline16 />,
+  },
+  {
+    value: 'response',
+    label: 'settingDialogAsideResponseOptionLabel',
+    icon: <IconThinkOutline16 />,
   },
   { value: 'data', label: 'settingDialogAsideDataOptionLabel', icon: <IconDataOutline16 /> },
 ]
@@ -104,6 +111,8 @@ const SettingsContent = () => {
               <FontSizeSetting />
               <LocationSetting />
             </>
+          ) : section === 'response' ? (
+            <ResponseSettings />
           ) : (
             <>
               <ApiKeyField editor={apiKeyEditor} />
@@ -350,6 +359,48 @@ const FontSizeSetting = () => {
         <div className={styles.fontSizePreviewAssistant}>{t('fontSizePreviewAssistant')}</div>
       </div>
     </div>
+  )
+}
+
+const Toggle = ({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean
+  onChange: (checked: boolean) => void
+  label: string
+}) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={checked}
+    aria-label={label}
+    className={clsx(styles.switch, checked && styles.switchOn)}
+    onClick={() => onChange(!checked)}
+  >
+    <span className={styles.switchThumb} />
+  </button>
+)
+
+const ResponseSettings = () => {
+  const t = useTranslate()
+  const thinkingAutoFold = useSettings((state) => state.thinkingAutoFold)
+  return (
+    <>
+      <SettingCell
+        label={t('settingsThinkingAutoFold')}
+        description={t('settingsThinkingAutoFoldDescription')}
+        status={null}
+        action={
+          <Toggle
+            checked={thinkingAutoFold}
+            label={t('settingsThinkingAutoFold')}
+            onChange={setThinkingAutoFold}
+          />
+        }
+      />
+    </>
   )
 }
 
