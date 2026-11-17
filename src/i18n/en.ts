@@ -189,4 +189,6 @@ export const en = {
   settingDialogAsideResponseOptionLabel: 'Response settings',
   settingsThinkingAutoFold: 'Auto-collapse thinking',
   settingsThinkingAutoFoldDescription: 'Collapse thinking content after it finishes',
+  settingsAutoReadAloud: 'Auto read-aloud',
+  settingsAutoReadAloudDescription: 'Read responses aloud after they finish',
 } satisfies Record<keyof typeof zh, string>

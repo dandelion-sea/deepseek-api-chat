@@ -10,7 +10,7 @@ export type ThemePreference = 'light' | 'dark' | 'system'
 /** 对话正文与输入框的字号档位 */
 export type FontSizePreference = 'small' | 'standard' | 'large' | 'xlarge'
 
-/** 本机设置，存 localStorage：API Key、语言、主题、位置、朗读音色、字号、思考自动折叠、深度思考与智能搜索开关、侧边栏收起状态 */
+/** 本机设置，存 localStorage：API Key、语言、主题、位置、朗读音色、字号、思考自动折叠、自动朗读、深度思考与智能搜索开关、侧边栏收起状态 */
 type Settings = {
   apiKey: string | null
   locale: Locale
@@ -19,6 +19,7 @@ type Settings = {
   ttsVoice: TtsVoice
   fontSize: FontSizePreference
   thinkingAutoFold: boolean
+  autoReadAloud: boolean
   thinking: boolean
   search: boolean
   siderCollapsed: boolean
@@ -32,6 +33,7 @@ const KEYS = {
   ttsVoice: 'chat-demo:tts-voice',
   fontSize: 'chat-demo:font-size',
   thinkingAutoFold: 'chat-demo:thinking-auto-fold',
+  autoReadAloud: 'chat-demo:auto-read-aloud',
   thinking: 'chat-demo:thinking',
   search: 'chat-demo:search',
   siderCollapsed: 'chat-demo:sider-collapsed',
@@ -107,6 +109,7 @@ export const useSettings = create<Settings>(() => ({
   ttsVoice: initialTtsVoice(),
   fontSize: initialFontSize(),
   thinkingAutoFold: read(KEYS.thinkingAutoFold) === 'true',
+  autoReadAloud: read(KEYS.autoReadAloud) === 'true',
   thinking: read(KEYS.thinking) === 'true',
   search: read(KEYS.search) === 'true',
   siderCollapsed: read(KEYS.siderCollapsed) === 'true',
@@ -141,6 +144,11 @@ export const setFontSize = (fontSize: FontSizePreference) => {
 export const setThinkingAutoFold = (thinkingAutoFold: boolean) => {
   write(KEYS.thinkingAutoFold, String(thinkingAutoFold))
   useSettings.setState({ thinkingAutoFold })
+}
+
+export const setAutoReadAloud = (autoReadAloud: boolean) => {
+  write(KEYS.autoReadAloud, String(autoReadAloud))
+  useSettings.setState({ autoReadAloud })
 }
 
 export const setApiKey = (apiKey: string | null) => {

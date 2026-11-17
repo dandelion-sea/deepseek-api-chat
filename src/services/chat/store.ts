@@ -19,9 +19,11 @@ import {
   applyEvent,
   canContinueReply,
   getContextRounds,
+  getReplyText,
   settleReply,
   toRequestMessages,
 } from './reply.js'
+import { toggleReadAloud } from '../speech/readAloud.js'
 import {
   toSessionSummary,
   type AssistantMessage,
@@ -1090,5 +1092,16 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
       ),
     }))
     persist(sessionId)
+    if (reply.status === 'done') {
+      const text = getReplyText(reply)
+      if (
+        useSettings.getState().autoReadAloud &&
+        get().activeId === sessionId &&
+        document.visibilityState === 'visible' &&
+        text.trim()
+      ) {
+        toggleReadAloud(reply.id, text, () => undefined)
+      }
+    }
   }
 }

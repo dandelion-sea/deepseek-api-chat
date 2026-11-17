@@ -21,6 +21,7 @@ import { useChatStore } from '../../services/chat/store.js'
 import { regionCodes, getRegionName, provinces } from '../../services/location.js'
 import {
   isChineseBrowser,
+  setAutoReadAloud,
   setFontSize,
   setLocale,
   setLocation,
@@ -386,6 +387,7 @@ const Toggle = ({
 const ResponseSettings = () => {
   const t = useTranslate()
   const thinkingAutoFold = useSettings((state) => state.thinkingAutoFold)
+  const autoReadAloud = useSettings((state) => state.autoReadAloud)
   return (
     <>
       <SettingCell
@@ -397,6 +399,18 @@ const ResponseSettings = () => {
             checked={thinkingAutoFold}
             label={t('settingsThinkingAutoFold')}
             onChange={setThinkingAutoFold}
+          />
+        }
+      />
+      <SettingCell
+        label={t('settingsAutoReadAloud')}
+        description={t('settingsAutoReadAloudDescription')}
+        status={null}
+        action={
+          <Toggle
+            checked={autoReadAloud}
+            label={t('settingsAutoReadAloud')}
+            onChange={setAutoReadAloud}
           />
         }
       />

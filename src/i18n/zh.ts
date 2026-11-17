@@ -180,4 +180,6 @@ export const zh = {
   settingDialogAsideResponseOptionLabel: '响应设置',
   settingsThinkingAutoFold: '自动折叠思考',
   settingsThinkingAutoFoldDescription: '开启后，思考结束后自动折叠思考内容',
+  settingsAutoReadAloud: '自动朗读',
+  settingsAutoReadAloudDescription: '回复完成后自动朗读正文',
 } as const

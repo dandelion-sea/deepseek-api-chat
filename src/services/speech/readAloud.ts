@@ -89,6 +89,9 @@ export const toggleReadAloud = (
   }
   const controller = new AbortController()
   const context = new AudioContext({ sampleRate: TTS_SAMPLE_RATE })
+  if (context.state === 'suspended') {
+    void context.resume().catch(() => {})
+  }
   current = { controller, context }
   useReadAloud.setState({ messageId, status: 'loading' })
   // 音色在开始朗读时读取，设置中切换后下一次朗读生效
