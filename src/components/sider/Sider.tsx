@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { useBackClose } from '../../app/backButton.js'
 import { useTranslate } from '../../i18n/index.js'
 import {
@@ -24,6 +24,7 @@ import { Modal } from '../base/Modal.js'
 import { showToast } from '../base/toastState.js'
 import { openChatSearch } from '../chatSearch/chatSearchState.js'
 import { openSettings } from '../settings/settingsDialogState.js'
+import { bindMobileDrawer } from './mobileDrawer.js'
 import { closeMobileSider, useMobileSider } from './mobileSiderState.js'
 import { SessionItem } from './SessionItem.js'
 import styles from './Sider.module.css'
@@ -44,6 +45,7 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   const selectedIds = [...selected].filter((id) => sessions.some((session) => session.id === id))
   const selectedCount = selectedIds.length
   const allSelected = sessions.length > 0 && sessions.every((session) => selected.has(session.id))
+  const drawerOpen = useMobileSider((state) => state.open)
 
   const exitSelection = () => {
     setSelecting(false)
@@ -100,6 +102,15 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
       setBatchDeleting(false)
     }
   }
+
+  // 抽屉常驻挂载，关闭时退出多选
+  useEffect(() => {
+    if (mobile && !drawerOpen) {
+      setSelecting(false)
+      setSelected(new Set())
+      setBatchDeleteOpen(false)
+    }
+  }, [mobile, drawerOpen])
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
@@ -316,18 +327,47 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   )
 }
 
-/** 移动端抽屉：浮在页面上方，点空白区域关闭。 */
-export const MobileSider = () => {
+/** 移动端抽屉：常驻挂载，按钮或横向滑动开合，打开时推开主页面，点主页面关闭 */
+export const MobileSider = ({ pageRef }: { pageRef: RefObject<HTMLElement | null> }) => {
   const open = useMobileSider((state) => state.open)
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const scrimRef = useRef<HTMLDivElement>(null)
+  const veilRef = useRef<HTMLDivElement>(null)
+  const motionRef = useRef<ReturnType<typeof bindMobileDrawer> | null>(null)
   useBackClose(open, closeMobileSider)
-  if (!open) {
-    return null
-  }
+
+  useEffect(() => {
+    const drawer = drawerRef.current
+    const scrim = scrimRef.current
+    const veil = veilRef.current
+    const page = pageRef.current
+    if (!drawer || !scrim || !veil || !page) {
+      return
+    }
+    const motion = bindMobileDrawer(
+      { drawer, scrim, page, veil },
+      {
+        isOpen: () => useMobileSider.getState().open,
+        setOpen: (value) => useMobileSider.setState({ open: value }),
+      }
+    )
+    motionRef.current = motion
+    return () => {
+      motionRef.current = null
+      motion.destroy()
+    }
+  }, [pageRef])
+
+  useEffect(() => {
+    motionRef.current?.render(open ? 1 : 0, true)
+  }, [open])
+
   return (
     <>
-      <div className={styles.drawerMask} onClick={closeMobileSider} />
-      <div className={styles.drawer}>
+      <div ref={veilRef} className={styles.pageVeil} onClick={closeMobileSider} />
+      <div ref={drawerRef} className={styles.drawer}>
         <Sider mobile />
+        <div ref={scrimRef} className={styles.drawerScrim} />
       </div>
     </>
   )

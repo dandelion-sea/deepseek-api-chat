@@ -293,23 +293,41 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
+/* 关闭时的默认状态；开合过程由 mobileDrawer.ts 写内联样式 */
 .drawer {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   z-index: 800;
+  visibility: hidden;
+  transform: translate3d(-100%, 0, 0);
 }
 
-.drawerMask {
+.drawerScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background-color: rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+
+  [data-ds-dark-theme] & {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.pageVeil {
   position: absolute;
   inset: 0;
   z-index: 799;
+  visibility: hidden;
+  opacity: 0;
+  background-color: var(--dsw-alias-bg-base);
 }
 
 .mobile {
-  width: 300px;
-  max-width: calc(100vw - 48px);
+  width: min(80vw, 360px);
+  border-right: none;
 
   .listWrap {
     margin-top: 16px;
