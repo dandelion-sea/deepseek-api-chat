@@ -20,11 +20,13 @@ import { useChatStore } from '../../services/chat/store.js'
 import { regionCodes, getRegionName, provinces } from '../../services/location.js'
 import {
   isChineseBrowser,
+  setFontSize,
   setLocale,
   setLocation,
   setThemePreference,
   setTtsVoice,
   useSettings,
+  type FontSizePreference,
   type ThemePreference,
 } from '../../services/settings.js'
 import { useTranslate, type TranslationKey, type TranslationMessage } from '../../i18n/index.js'
@@ -99,6 +101,7 @@ const SettingsContent = () => {
               <ThemeSetting />
               <LocaleSetting />
               <TtsVoiceSetting />
+              <FontSizeSetting />
               <LocationSetting />
             </>
           ) : (
@@ -311,6 +314,42 @@ const TtsVoiceSetting = () => {
         />
       }
     />
+  )
+}
+
+const fontSizeOptions: { value: FontSizePreference; label: TranslationKey }[] = [
+  { value: 'small', label: 'fontSizeSmall' },
+  { value: 'standard', label: 'fontSizeStandard' },
+  { value: 'large', label: 'fontSizeLarge' },
+  { value: 'xlarge', label: 'fontSizeExtraLarge' },
+]
+
+const FontSizeSetting = () => {
+  const t = useTranslate()
+  const fontSize = useSettings((state) => state.fontSize)
+  return (
+    <div className={styles.fontSize}>
+      <SettingCell
+        label={t('settingsFontSize')}
+        description={t('settingsFontSizeDescription')}
+        status={null}
+        action={
+          <Select
+            ariaLabel={t('settingsFontSize')}
+            value={fontSize}
+            options={fontSizeOptions.map((option) => ({
+              value: option.value,
+              label: t(option.label),
+            }))}
+            onChange={setFontSize}
+          />
+        }
+      />
+      <div className={styles.fontSizePreview} aria-hidden="true">
+        <div className={styles.fontSizePreviewUser}>{t('fontSizePreviewUser')}</div>
+        <div className={styles.fontSizePreviewAssistant}>{t('fontSizePreviewAssistant')}</div>
+      </div>
+    </div>
   )
 }
 

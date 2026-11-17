@@ -7,13 +7,17 @@ export type Locale = 'zh-CN' | 'en-US'
 /** 主题偏好；默认跟随系统 */
 export type ThemePreference = 'light' | 'dark' | 'system'
 
-/** 本机设置，存 localStorage：API Key、语言、主题、位置、朗读音色、深度思考与智能搜索开关、侧边栏收起状态 */
+/** 对话正文与输入框的字号档位 */
+export type FontSizePreference = 'small' | 'standard' | 'large' | 'xlarge'
+
+/** 本机设置，存 localStorage：API Key、语言、主题、位置、朗读音色、字号、深度思考与智能搜索开关、侧边栏收起状态 */
 type Settings = {
   apiKey: string | null
   locale: Locale
   themePreference: ThemePreference
   location: UserLocation | null
   ttsVoice: TtsVoice
+  fontSize: FontSizePreference
   thinking: boolean
   search: boolean
   siderCollapsed: boolean
@@ -25,6 +29,7 @@ const KEYS = {
   location: 'chat-demo:location',
   themePreference: 'chat-demo:theme-preference',
   ttsVoice: 'chat-demo:tts-voice',
+  fontSize: 'chat-demo:font-size',
   thinking: 'chat-demo:thinking',
   search: 'chat-demo:search',
   siderCollapsed: 'chat-demo:sider-collapsed',
@@ -87,12 +92,18 @@ const initialThemePreference = (): ThemePreference => {
 /** 未保存过时使用服务端默认音色 stella（海星） */
 const initialTtsVoice = (): TtsVoice => (read(KEYS.ttsVoice) === 'tide' ? 'tide' : 'stella')
 
+const initialFontSize = (): FontSizePreference => {
+  const saved = read(KEYS.fontSize)
+  return saved === 'small' || saved === 'large' || saved === 'xlarge' ? saved : 'standard'
+}
+
 export const useSettings = create<Settings>(() => ({
   apiKey: read(KEYS.apiKey),
   locale: initialLocale(),
   location: initialLocation(),
   themePreference: initialThemePreference(),
   ttsVoice: initialTtsVoice(),
+  fontSize: initialFontSize(),
   thinking: read(KEYS.thinking) === 'true',
   search: read(KEYS.search) === 'true',
   siderCollapsed: read(KEYS.siderCollapsed) === 'true',
@@ -117,6 +128,11 @@ export const setThemePreference = (themePreference: ThemePreference) => {
 export const setTtsVoice = (ttsVoice: TtsVoice) => {
   write(KEYS.ttsVoice, ttsVoice)
   useSettings.setState({ ttsVoice })
+}
+
+export const setFontSize = (fontSize: FontSizePreference) => {
+  write(KEYS.fontSize, fontSize)
+  useSettings.setState({ fontSize })
 }
 
 export const setApiKey = (apiKey: string | null) => {

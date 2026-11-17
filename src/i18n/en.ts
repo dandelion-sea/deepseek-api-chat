@@ -178,4 +178,12 @@ export const en = {
   latestReminderLanguage: 'English',
   settingsLocaleZhCN: 'Simplified Chinese',
   settingsLocaleEnUS: 'English',
+  settingsFontSize: 'Font size',
+  settingsFontSizeDescription: 'Adjust the text size for messages and the input box',
+  fontSizeSmall: 'Small',
+  fontSizeStandard: 'Default',
+  fontSizeLarge: 'Large',
+  fontSizeExtraLarge: 'Extra large',
+  fontSizePreviewUser: 'Hi, how does this text size look?',
+  fontSizePreviewAssistant: 'This is a preview of the response text size.',
 } satisfies Record<keyof typeof zh, string>

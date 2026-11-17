@@ -169,4 +169,12 @@ export const zh = {
   latestReminderLanguage: '中文',
   settingsLocaleZhCN: '简体中文',
   settingsLocaleEnUS: 'English',
+  settingsFontSize: '字体大小',
+  settingsFontSizeDescription: '调整对话正文与输入框的字号',
+  fontSizeSmall: '小',
+  fontSizeStandard: '标准',
+  fontSizeLarge: '大',
+  fontSizeExtraLarge: '特大',
+  fontSizePreviewUser: '你好，看看这个字号合适吗？',
+  fontSizePreviewAssistant: '这是回答正文的字号预览。',
 } as const
