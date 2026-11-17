@@ -5,6 +5,7 @@ import {
   IconCheckOutline16,
   IconEditOutline16,
   IconEllipsisOutline16,
+  IconImageOutline16,
   IconPinOutline16,
   IconTrashOutline16,
 } from '../base/icons.js'
@@ -12,6 +13,7 @@ import { renameSession, selectSession, setSessionPinned } from '../../services/c
 import type { SessionSummary } from '../../services/chat/types.js'
 import { IconButton } from '../base/IconButton.js'
 import { Menu } from '../base/Menu.js'
+import { openShareImage } from '../share/shareImageState.js'
 import { closeMobileSider } from './mobileSiderState.js'
 import styles from './SessionItem.module.css'
 
@@ -119,6 +121,12 @@ export const SessionItem = memo(function SessionItem({
                 label: t('sessionItemMenuRenameOption'),
                 icon: <IconEditOutline16 />,
                 onSelect: () => setEditing(true),
+              },
+              {
+                key: 'share',
+                label: t('shareLongImage'),
+                icon: <IconImageOutline16 />,
+                onSelect: () => openShareImage({ sessionId: session.id }),
               },
               {
                 key: 'delete',

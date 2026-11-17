@@ -2,6 +2,11 @@ import { useTranslate } from '../../i18n/index.js'
 import { memo, useEffect, useRef, useState } from 'react'
 import { useTheme } from '../../app/theme.js'
 import { renderMermaid } from '../../services/markdown/mermaid.js'
+import { downloadBlob } from '../../utils/exportFile.js'
+import { exportSvgAsPng } from '../../utils/exportImage.js'
+import { IconDownloadOutline16 } from '../base/icons.js'
+import { showToast } from '../base/toastState.js'
+import styles from './MermaidDiagram.module.css'
 
 /** 流式绘制最新内容、保留上次有效图；回答结束后才显示渲染错误。 */
 export const MermaidDiagram = memo(function MermaidDiagram({
@@ -14,6 +19,8 @@ export const MermaidDiagram = memo(function MermaidDiagram({
   const t = useTranslate()
   const dark = useTheme() === 'dark'
   const [result, setResult] = useState({ svg: '', failedCode: null as string | null })
+  const [exporting, setExporting] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
   const latestCodeRef = useRef(code)
   latestCodeRef.current = code
   // 流式阶段从 ref 取最新文本，避免每个片段都取消绘制；结束后立即绘制完整内容。
@@ -76,6 +83,30 @@ export const MermaidDiagram = memo(function MermaidDiagram({
     }
   }, [dark, loading, finalCode])
 
+  const exportImage = async () => {
+    if (!result.svg || exporting) {
+      return
+    }
+    setExporting(true)
+    try {
+      const node = containerRef.current
+      const svg = node?.querySelector('svg')
+      if (!node || !svg) {
+        throw new Error('Diagram is not ready')
+      }
+      const block = node.closest<HTMLElement>('.md-code-block')
+      const background = block
+        ? getComputedStyle(block).backgroundColor
+        : getComputedStyle(document.body).backgroundColor
+      const blob = await exportSvgAsPng(svg, background)
+      downloadBlob(blob, `deepseek-mermaid-${Date.now()}.png`)
+    } catch {
+      showToast({ key: 'imageExportFailed', type: 'error' })
+    } finally {
+      setExporting(false)
+    }
+  }
+
   if (!code.trim() || !result.svg) {
     return (
       <div className="md-mermaid-status" role="status">
@@ -88,5 +119,24 @@ export const MermaidDiagram = memo(function MermaidDiagram({
     )
   }
 
-  return <div className="md-mermaid-diagram" dangerouslySetInnerHTML={{ __html: result.svg }} />
+  return (
+    <div className={styles.wrapper}>
+      <div
+        ref={containerRef}
+        className="md-mermaid-diagram"
+        dangerouslySetInnerHTML={{ __html: result.svg }}
+      />
+      <button
+        type="button"
+        className={styles.export}
+        aria-label={t('exportImage')}
+        title={t('exportImage')}
+        data-export-ignore="true"
+        disabled={exporting}
+        onClick={() => void exportImage()}
+      >
+        <IconDownloadOutline16 />
+      </button>
+    </div>
+  )
 })

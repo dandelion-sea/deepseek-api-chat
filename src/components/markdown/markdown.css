@@ -342,8 +342,38 @@
   word-break: break-all;
 }
 
+.markdown-table-block {
+  position: relative;
+  margin: 16px 0;
+}
+
 .markdown-table-wrapper {
   overflow-x: auto;
+}
+
+.markdown-table-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  margin-top: 6px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  font: var(--dsw-font-xs-13);
+  cursor: pointer;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    background-color: var(--dsw-alias-interactive-bg-hover);
+    color: var(--dsw-alias-label-secondary);
+  }
 }
 
 .md-code-block-switch {

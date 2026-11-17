@@ -1,11 +1,12 @@
 import { useTranslate } from '../../i18n/index.js'
 import clsx from 'clsx'
 import { memo } from 'react'
-import { IconRefreshOutline16, IconWarningOutline16 } from '../base/icons.js'
+import { IconImageOutline16, IconRefreshOutline16, IconWarningOutline16 } from '../base/icons.js'
 import { describeReply } from '../../services/chat/describe.js'
 import { canContinueReply } from '../../services/chat/reply.js'
 import { continueReply, regenerateReply } from '../../services/chat/store.js'
 import { stopReadAloud } from '../../services/speech/readAloud.js'
+import { openShareImage } from '../share/shareImageState.js'
 import type { AssistantMessage as AssistantMessageType } from '../../services/chat/types.js'
 import { openSettings } from '../settings/settingsDialogState.js'
 import { IconButton } from '../base/IconButton.js'
@@ -145,6 +146,14 @@ export const AssistantMessage = memo(function AssistantMessage({
             {copyText ? <CopyButton text={copyText} /> : null}
             {responseText && !refused ? (
               <ReadAloudButton messageId={message.id} text={responseText} />
+            ) : null}
+            {answer ? (
+              <IconButton
+                icon={<IconImageOutline16 />}
+                tooltip={t('shareMessageImage')}
+                tooltipPlacement="bottom"
+                onClick={() => openShareImage({ sessionId, messageId: message.id })}
+              />
             ) : null}
             <IconButton
               icon={<IconRefreshOutline16 />}

@@ -29,7 +29,11 @@ const CodeInfoRow = ({
   return (
     <div className={styles.container}>
       {onToggleDiagram ? (
-        <div className="md-code-block-switch" aria-label={t('mermaidSwitchLabel')}>
+        <div
+          className="md-code-block-switch"
+          aria-label={t('mermaidSwitchLabel')}
+          data-export-ignore="true"
+        >
           <button
             type="button"
             className={styles.button}
@@ -53,6 +57,7 @@ const CodeInfoRow = ({
       <button
         type="button"
         className={styles.button}
+        data-export-ignore="true"
         onClick={async () => {
           if (!(await copyText(code))) {
             showToast({ key: 'copyFailed' })
@@ -105,7 +110,7 @@ export const CodeBlock = memo(function CodeBlock({
   }, [code, lang, loaded])
   return (
     <div className="md-code-block">
-      <div className="md-code-block-banner">
+      <div className="md-code-block-banner" data-export-ignore={isMermaid ? 'true' : undefined}>
         <CodeInfoRow
           code={code}
           infostring={infostring}

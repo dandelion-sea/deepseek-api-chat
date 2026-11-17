@@ -9,6 +9,9 @@ import type {
   Table as TableNode,
 } from 'mdast'
 import { CitationLink } from '../search/CitationLink.js'
+import { useTranslate } from '../../i18n/index.js'
+import { downloadText } from '../../utils/exportFile.js'
+import { IconDownloadOutline16 } from '../base/icons.js'
 import { CodeBlock } from './CodeBlock.js'
 import { ImageAsLink, Link } from './Link.js'
 import { InlineMath, MathBlock } from './MathFormula.js'
@@ -42,47 +45,102 @@ const List = memo(function List({ node, loading }: { node: ListNode; loading: bo
   )
 })
 
+const phrasingText = (nodes: PhrasingContent[]): string =>
+  nodes
+    .map((node) => {
+      switch (node.type) {
+        case 'text':
+          return node.value
+        case 'inlineCode':
+        case 'inlineMath':
+          return node.value
+        case 'emphasis':
+        case 'strong':
+        case 'link':
+          return phrasingText(node.children)
+        case 'image':
+          return node.alt ?? ''
+        case 'html':
+          return node.value.replace(/<[^>]*>/g, '')
+        case 'break':
+          return ' '
+        case 'citation':
+          return `[${node.source.index}]`
+        default:
+          return ''
+      }
+    })
+    .join('')
+
+const csvCell = (value: string) => `"${value.replace(/"/g, '""')}"`
+
+const tableToCsv = (node: TableNode) =>
+  node.children
+    .map((row) => row.children.map((cell) => csvCell(phrasingText(cell.children))).join(','))
+    .join('\r\n')
+
 const Table = memo(function Table({ node }: { node: TableNode }) {
+  const t = useTranslate()
   const columnCount = node.children[0]?.children.length
+  const exportTable = () => {
+    downloadText(
+      `\uFEFF${tableToCsv(node)}`,
+      `deepseek-table-${Date.now()}.csv`,
+      'text/csv;charset=utf-8'
+    )
+  }
   return (
-    <div className="markdown-table-wrapper">
-      <table>
-        {node.children[0] ? (
-          <thead>
-            <tr>
-              {node.children[0].children.map((cell, cellIndex) => {
+    <div className="markdown-table-block">
+      <div className="markdown-table-wrapper">
+        <table>
+          {node.children[0] ? (
+            <thead>
+              <tr>
+                {node.children[0].children.map((cell, cellIndex) => {
+                  return (
+                    <th key={cellIndex}>
+                      <MarkdownPhrasingContent nodes={cell.children} />
+                    </th>
+                  )
+                })}
+              </tr>
+            </thead>
+          ) : null}
+          {node.children[1] ? (
+            <tbody>
+              {node.children.slice(1).map((row, rowIndex) => {
+                const curColumnCount = row.children.length || 0
                 return (
-                  <th key={cellIndex}>
-                    <MarkdownPhrasingContent nodes={cell.children} />
-                  </th>
+                  <tr key={rowIndex}>
+                    {row.children.map((cell, cellIndex) => {
+                      return (
+                        <td key={cellIndex}>
+                          <MarkdownPhrasingContent nodes={cell.children} />
+                        </td>
+                      )
+                    })}
+                    {/* 补齐到列数 */}
+                    {Array.from({ length: columnCount - curColumnCount }).map((_, idx) => (
+                      <td key={`ptd_${idx}`} />
+                    ))}
+                  </tr>
                 )
               })}
-            </tr>
-          </thead>
-        ) : null}
-        {node.children[1] ? (
-          <tbody>
-            {node.children.slice(1).map((row, rowIndex) => {
-              const curColumnCount = row.children.length || 0
-              return (
-                <tr key={rowIndex}>
-                  {row.children.map((cell, cellIndex) => {
-                    return (
-                      <td key={cellIndex}>
-                        <MarkdownPhrasingContent nodes={cell.children} />
-                      </td>
-                    )
-                  })}
-                  {/* 补齐到列数 */}
-                  {Array.from({ length: columnCount - curColumnCount }).map((_, idx) => (
-                    <td key={`ptd_${idx}`} />
-                  ))}
-                </tr>
-              )
-            })}
-          </tbody>
-        ) : null}
-      </table>
+            </tbody>
+          ) : null}
+        </table>
+      </div>
+      <button
+        type="button"
+        className="markdown-table-export"
+        aria-label={t('exportTable')}
+        title={t('exportTable')}
+        data-export-ignore="true"
+        onClick={exportTable}
+      >
+        <IconDownloadOutline16 />
+        <span>{t('exportTable')}</span>
+      </button>
     </div>
   )
 })

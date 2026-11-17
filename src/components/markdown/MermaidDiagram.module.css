@@ -1,0 +1,33 @@
+.wrapper {
+  position: relative;
+}
+
+.export {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--dsw-alias-markdown-code-block);
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  opacity: 0.72;
+
+  &:hover:not(:disabled) {
+    background-color: var(--dsw-alias-interactive-bg-hover);
+    color: var(--dsw-alias-label-primary);
+    opacity: 1;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+}

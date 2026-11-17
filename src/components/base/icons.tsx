@@ -553,3 +553,25 @@ export const IconSelectOutline16 = () => (
     />
   </svg>
 )
+
+export const IconImageOutline16 = () => (
+  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect
+      x="1.75"
+      y="2.25"
+      width="12.5"
+      height="11.5"
+      rx="2.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <circle cx="5.6" cy="6.1" r="1.15" fill="currentColor" />
+    <path
+      d="m3.1 12.2 3.1-3.1 2.2 2.2 1.7-1.7 2.8 2.8"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
