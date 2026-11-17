@@ -37,7 +37,7 @@ pnpm android:release   # release build in android/app/build/outputs/apk/release/
 ```
 
 - The version comes from `package.json`. Release signing reads `ANDROID_KEYSTORE_PATH`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`; without them the APK is unsigned.
-- Pushing a `v*` tag or running the [Android workflow](.github/workflows/android.yml) manually builds a release APK. Store the keystore as Base64 in the `ANDROID_KEYSTORE_BASE64` secret and the other three values in secrets with the same names.
+- Pushing a `v*` tag runs the [Android workflow](.github/workflows/android.yml), which builds a release APK and publishes it with a zipped web build to GitHub Releases. Manual runs only upload a workflow artifact (kept for 90 days). Store the keystore as Base64 in the `ANDROID_KEYSTORE_BASE64` secret and the other three values in secrets with the same names.
 - The app runs at the `https://localhost` origin, so its local data is separate from the browser version. Downloads, exports, and opening attachments go through the system share sheet; external links open in the system browser.
 - The package name `com.example.chatdemo` is a placeholder. Change it in `capacitor.config.ts` and `android/app` before distributing the app.
 

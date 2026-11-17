@@ -37,7 +37,7 @@ pnpm android:release   # 发布包，输出到 android/app/build/outputs/apk/rel
 ```
 
 - 版本号取自 `package.json`。发布包签名读取环境变量 `ANDROID_KEYSTORE_PATH`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD`，未设置时产出未签名 APK。
-- 推送 `v*` 标签或手动触发 [Android 工作流](.github/workflows/android.yml) 会构建发布包；签名用的 keystore 以 Base64 存入 Secret `ANDROID_KEYSTORE_BASE64`，其余三项存入同名 Secret。
+- 推送 `v*` 标签时 [Android 工作流](.github/workflows/android.yml) 会构建发布包，并连同网页版 zip 发布到 GitHub Release；手动触发只上传构建产物（保留 90 天）。签名用的 keystore 以 Base64 存入 Secret `ANDROID_KEYSTORE_BASE64`，其余三项存入同名 Secret。
 - App 页面源为 `https://localhost`，本地数据与浏览器版互不相通。下载、导出和打开附件会调起系统分享面板，外部链接在系统浏览器中打开。
 - 包名 `com.example.chatdemo` 仅为示例，分发前请在 `capacitor.config.ts` 和 `android/app` 中改为自己的。
 
