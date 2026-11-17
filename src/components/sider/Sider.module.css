@@ -86,6 +86,86 @@
   margin-right: 6px;
 }
 
+.selectionBar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background-color: var(--dsw-specific-input-major);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 13px;
+}
+
+.selectionCount {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.selectionButtons {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 2px;
+}
+
+.selectAll {
+  flex-shrink: 0;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--dsw-alias-brand-text);
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--dsw-alias-interactive-bg-hover);
+  }
+}
+
+.batchBar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  width: 100%;
+  margin-block: auto;
+}
+
+.batchAction {
+  flex: 1;
+  height: 36px;
+  min-width: 0;
+  padding: 0 4px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--dsw-alias-interactive-bg-active);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+}
+
+.batchDanger {
+  color: var(--dsw-alias-state-error-primary);
+}
+
 .listWrap {
   position: relative;
   flex: 1;
@@ -128,6 +208,20 @@
   display: flex;
   flex-shrink: 0;
   height: 64px;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin-block: auto;
+
+  .settings {
+    flex: 1;
+    width: auto;
+    margin-block: 0;
+  }
 }
 
 .settings {

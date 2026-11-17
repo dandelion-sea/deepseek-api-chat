@@ -105,7 +105,10 @@ const getStreamController = (id: string) => {
 }
 
 const sameSummary = (a: SessionSummary, b: SessionSummary) =>
-  a.title === b.title && a.createdAt === b.createdAt && a.updatedAt === b.updatedAt
+  a.title === b.title &&
+  a.pinned === b.pinned &&
+  a.createdAt === b.createdAt &&
+  a.updatedAt === b.updatedAt
 
 const sessionAccess = new Map<string, number>()
 const unsavedSessions = new Set<string>()
@@ -482,6 +485,29 @@ export const renameSession = (id: string, title: string) => {
   }
 }
 
+export const setSessionPinned = (id: string, pinned: boolean) => {
+  if (get().importingHistory || deletingSessions.has(id)) {
+    return
+  }
+  if (getSession(id)) {
+    updateSession(id, (session) => (session.pinned === pinned ? session : { ...session, pinned }))
+    persist(id)
+  } else {
+    set((state) => ({
+      sessions: state.sessions.map((session) =>
+        session.id === id ? { ...session, pinned } : session
+      ),
+    }))
+    void db.setSessionPinned(id, pinned).catch(db.reportStorageError('pin session'))
+  }
+}
+
+export const setSessionsPinned = (ids: string[], pinned: boolean) => {
+  for (const id of ids) {
+    setSessionPinned(id, pinned)
+  }
+}
+
 /**
  * 删除会话；本地原件仅在没有其他会话引用时清理。远端文件不删：导入、编辑、重新生成都会复用同一个附件，
  * 同一服务端文件可能被多个会话引用，不维护引用计数。
@@ -571,6 +597,7 @@ export const sendMessage = (targetSessionId: string | null) => {
     const session: Session = {
       id: createId(),
       title: '',
+      pinned: false,
       createdAt: now,
       updatedAt: now,
       messages: [],

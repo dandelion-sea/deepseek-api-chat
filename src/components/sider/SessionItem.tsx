@@ -1,8 +1,14 @@
 import clsx from 'clsx'
 import { memo, useState } from 'react'
 import { useTranslate } from '../../i18n/index.js'
-import { IconEditOutline16, IconEllipsisOutline16, IconTrashOutline16 } from '../base/icons.js'
-import { renameSession, selectSession } from '../../services/chat/store.js'
+import {
+  IconCheckOutline16,
+  IconEditOutline16,
+  IconEllipsisOutline16,
+  IconPinOutline16,
+  IconTrashOutline16,
+} from '../base/icons.js'
+import { renameSession, selectSession, setSessionPinned } from '../../services/chat/store.js'
 import type { SessionSummary } from '../../services/chat/types.js'
 import { IconButton } from '../base/IconButton.js'
 import { Menu } from '../base/Menu.js'
@@ -13,10 +19,16 @@ export const SessionItem = memo(function SessionItem({
   session,
   active,
   onDelete,
+  selectionMode = false,
+  selected = false,
+  onToggleSelected,
 }: {
   session: SessionSummary
   active: boolean
   onDelete: () => void
+  selectionMode?: boolean
+  selected?: boolean
+  onToggleSelected?: () => void
 }) {
   const t = useTranslate()
   const [editing, setEditing] = useState(false)
@@ -47,38 +59,82 @@ export const SessionItem = memo(function SessionItem({
     )
   }
 
+  const activate = () => {
+    if (selectionMode) {
+      onToggleSelected?.()
+      return
+    }
+    selectSession(session.id)
+    closeMobileSider()
+  }
+
   return (
     <div
-      className={clsx(styles.item, active && styles.active)}
-      onClick={() => {
-        selectSession(session.id)
-        closeMobileSider()
-      }}
+      className={clsx(
+        styles.item,
+        active && styles.active,
+        selected && styles.selected,
+        selectionMode && styles.selectable
+      )}
+      role={selectionMode ? 'checkbox' : undefined}
+      aria-checked={selectionMode ? selected : undefined}
+      tabIndex={selectionMode ? 0 : undefined}
+      onClick={activate}
+      onKeyDown={
+        selectionMode
+          ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                onToggleSelected?.()
+              }
+            }
+          : undefined
+      }
     >
-      <div className={styles.title}>{displayTitle}</div>
-      <div className={styles.action} onClick={(event) => event.stopPropagation()}>
-        <Menu
-          options={[
-            {
-              key: 'rename',
-              label: t('sessionItemMenuRenameOption'),
-              icon: <IconEditOutline16 />,
-              onSelect: () => setEditing(true),
-            },
-            {
-              key: 'delete',
-              label: t('delete'),
-              icon: <IconTrashOutline16 />,
-              danger: true,
-              onSelect: onDelete,
-            },
-          ]}
-        >
-          {({ toggle }) => (
-            <IconButton icon={<IconEllipsisOutline16 />} aria-label={t('more')} onClick={toggle} />
-          )}
-        </Menu>
+      {selectionMode ? (
+        <span className={clsx(styles.checkbox, selected && styles.checkboxChecked)}>
+          {selected ? <IconCheckOutline16 /> : null}
+        </span>
+      ) : null}
+      <div className={styles.title}>
+        {session.pinned ? (
+          <span className={styles.pin} aria-hidden="true">
+            <IconPinOutline16 />
+          </span>
+        ) : null}
+        <span className={styles.titleText}>{displayTitle}</span>
       </div>
+      {selectionMode ? null : (
+        <div className={styles.action} onClick={(event) => event.stopPropagation()}>
+          <Menu
+            options={[
+              {
+                key: 'pin',
+                label: t(session.pinned ? 'sessionUnpinAction' : 'sessionPinAction'),
+                icon: <IconPinOutline16 />,
+                onSelect: () => setSessionPinned(session.id, !session.pinned),
+              },
+              {
+                key: 'rename',
+                label: t('sessionItemMenuRenameOption'),
+                icon: <IconEditOutline16 />,
+                onSelect: () => setEditing(true),
+              },
+              {
+                key: 'delete',
+                label: t('delete'),
+                icon: <IconTrashOutline16 />,
+                danger: true,
+                onSelect: onDelete,
+              },
+            ]}
+          >
+            {({ toggle }) => (
+              <IconButton icon={<IconEllipsisOutline16 />} aria-label={t('more')} onClick={toggle} />
+            )}
+          </Menu>
+        </div>
+      )}
     </div>
   )
 })

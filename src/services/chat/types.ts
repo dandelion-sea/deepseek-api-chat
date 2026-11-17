@@ -108,6 +108,8 @@ export type Message = UserMessage | AssistantMessage
 export type Session = {
   id: string
   title: string
+  /** 是否置顶；置顶会话单独分组且不受数量限制。 */
+  pinned: boolean
   createdAt: number
   updatedAt: number
   /** 包含所有分支的消息，按创建顺序存储。 */
@@ -117,12 +119,13 @@ export type Session = {
 }
 
 /** 会话列表元数据；消息只在打开会话时加载。 */
-export type SessionSummary = Pick<Session, 'id' | 'title' | 'createdAt' | 'updatedAt'>
+export type SessionSummary = Pick<Session, 'id' | 'title' | 'pinned' | 'createdAt' | 'updatedAt'>
 
 /** 显式提取字段，避免将完整会话的消息带进列表。 */
 export const toSessionSummary = (session: SessionSummary): SessionSummary => ({
   id: session.id,
   title: session.title,
+  pinned: session.pinned === true,
   createdAt: session.createdAt,
   updatedAt: session.updatedAt,
 })

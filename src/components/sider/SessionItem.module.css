@@ -16,6 +16,14 @@
     color: var(--dsw-alias-brand-primary-invert);
   }
 
+  &.selected {
+    background-color: var(--dsw-alias-interactive-bg-active);
+  }
+
+  &.selectable {
+    padding-left: 8px;
+  }
+
   @media (hover: hover) {
     &:not(.active):hover {
       background-color: var(--dsw-specific-sidebar-nav-item-hover);
@@ -31,12 +39,54 @@
 }
 
 .title {
+  display: flex;
   flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.titleText {
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   line-height: 18px;
+}
+
+.pin {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--dsw-alias-label-tertiary);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.checkbox {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border: 1.5px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  color: var(--dsw-static-neutral-bluish-00);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.checkboxChecked {
+  border-color: var(--dsw-alias-button-primary-fill);
+  background-color: var(--dsw-alias-button-primary-fill);
 }
 
 .action {
@@ -74,6 +124,10 @@
   }
 
   .title {
+    line-height: 22px;
+  }
+
+  .titleText {
     line-height: 22px;
   }
 
