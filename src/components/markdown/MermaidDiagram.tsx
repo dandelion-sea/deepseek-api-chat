@@ -99,7 +99,7 @@ export const MermaidDiagram = memo(function MermaidDiagram({
         ? getComputedStyle(block).backgroundColor
         : getComputedStyle(document.body).backgroundColor
       const blob = await exportSvgAsPng(svg, background)
-      downloadBlob(blob, `deepseek-mermaid-${Date.now()}.png`)
+      await downloadBlob(blob, `deepseek-mermaid-${Date.now()}.png`)
     } catch {
       showToast({ key: 'imageExportFailed', type: 'error' })
     } finally {

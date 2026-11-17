@@ -7,12 +7,21 @@
   "type": "module",
   "scripts": {
     "dev": "rspack serve -c rspack.config.ts",
-    "build": "rm -rf dist && NODE_ENV=production rspack build -c rspack.config.ts",
+    "build": "rspack build -c rspack.config.ts --node-env production",
+    "android:sync": "pnpm build && cap sync android",
+    "android:debug": "pnpm android:sync && node scripts/gradlew.mjs assembleDebug",
+    "android:release": "pnpm android:sync && node scripts/gradlew.mjs assembleRelease",
+    "android:open": "cap open android",
     "type": "tsc -p tsconfig.json",
-    "lint": "oxlint src rspack.config.ts",
+    "lint": "oxlint src rspack.config.ts capacitor.config.ts scripts",
     "format": "oxfmt --write ."
   },
   "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.2",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/share": "8.0.3",
     "@types/katex": "^0.16.5",
     "@types/mdast": "~4.0.3",
     "@types/prismjs": "^1.26.1",
@@ -36,6 +45,7 @@
     "zustand": "4.4.7"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.6.2",
     "@rspack/cli": "2.0.2",
     "@rspack/core": "2.0.2",
     "@rspack/dev-server": "2.0.1",

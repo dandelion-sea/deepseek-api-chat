@@ -4,6 +4,8 @@ import { useTranslate } from '../../i18n/index.js'
 import { useUploads } from '../../services/attachments.js'
 import { loadFile } from '../../services/chat/db.js'
 import type { FileAttachment } from '../../services/chat/types.js'
+import { openObjectUrl } from '../../utils/exportFile.js'
+import { isNative } from '../../utils/platform.js'
 import { IconPhotoErrorFill20, IconRefreshOutline16 } from '../base/icons.js'
 import { Tooltip } from '../base/Tooltip.js'
 import { FileCard } from '../files/FileCard.js'
@@ -142,6 +144,12 @@ export const MessageFile = ({
         target="_blank"
         rel="noreferrer"
         title={file.name}
+        onClick={(event) => {
+          if (isNative) {
+            event.preventDefault()
+            void openObjectUrl(url, file.name)
+          }
+        }}
       >
         {preview}
       </a>
@@ -158,7 +166,7 @@ export const MessageFile = ({
       status={uploading ? 'uploading' : failed ? 'error' : 'done'}
       error={errorText}
       onRetry={retry ?? undefined}
-      onOpen={url && !upload ? () => window.open(url, '_blank', 'noreferrer') : undefined}
+      onOpen={url && !upload ? () => void openObjectUrl(url, file.name) : undefined}
     />
   )
 }

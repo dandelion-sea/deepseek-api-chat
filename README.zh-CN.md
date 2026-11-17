@@ -27,6 +27,20 @@ pnpm build
 
 产物位于 `dist/`，可部署到静态服务器，也可直接打开 `dist/index.html`。直接打开时，浏览器和 API 服务需允许 `file://` 页面的存储与跨域请求。
 
+## Android
+
+Android 版用 [Capacitor](https://capacitorjs.com/) 把 `dist/` 装进系统 WebView，与网页版共用同一套代码。构建另需 JDK 21 和 Android SDK（Platform 36），并通过 `ANDROID_HOME` 或 `android/local.properties` 指定 SDK 位置：
+
+```sh
+pnpm android:debug     # 调试包，输出到 android/app/build/outputs/apk/debug/
+pnpm android:release   # 发布包，输出到 android/app/build/outputs/apk/release/
+```
+
+- 版本号取自 `package.json`。发布包签名读取环境变量 `ANDROID_KEYSTORE_PATH`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD`，未设置时产出未签名 APK。
+- 推送 `v*` 标签或手动触发 [Android 工作流](.github/workflows/android.yml) 会构建发布包；签名用的 keystore 以 Base64 存入 Secret `ANDROID_KEYSTORE_BASE64`，其余三项存入同名 Secret。
+- App 页面源为 `https://localhost`，本地数据与浏览器版互不相通。下载、导出和打开附件会调起系统分享面板，外部链接在系统浏览器中打开。
+- 包名 `com.example.chatdemo` 仅为示例，分发前请在 `capacitor.config.ts` 和 `android/app` 中改为自己的。
+
 ## 功能
 
 - 多会话、自动标题、重命名与删除；编辑提问、重新生成和切换消息分支。
@@ -45,13 +59,15 @@ API Key 和设置保存在浏览器 localStorage，会话及附件原件保存�
 
 ## 开发
 
-| 命令          | 用途                |
-| ------------- | ------------------- |
-| `pnpm dev`    | 启动开发服务器      |
-| `pnpm build`  | 构建到 `dist/`      |
-| `pnpm type`   | TypeScript 类型检查 |
-| `pnpm lint`   | oxlint 检查         |
-| `pnpm format` | oxfmt 格式化        |
+| 命令                 | 用途                                |
+| -------------------- | ----------------------------------- |
+| `pnpm dev`           | 启动开发服务器                      |
+| `pnpm build`         | 构建到 `dist/`                      |
+| `pnpm type`          | TypeScript 类型检查                 |
+| `pnpm lint`          | oxlint 检查                         |
+| `pnpm format`        | oxfmt 格式化                        |
+| `pnpm android:debug` | 构建 Android 调试包                 |
+| `pnpm android:open`  | 在 Android Studio 中打开 `android/` |
 
 [rspack.config.ts](rspack.config.ts) 默认连接 `https://api.deepseek.com`。`createConfig({ apiOrigin, devServer })` 支持自定义 API 地址和开发服务器代理。
 

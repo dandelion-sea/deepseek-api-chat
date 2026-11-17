@@ -27,6 +27,20 @@ pnpm build
 
 The output is written to `dist/`. Deploy it to a static web server or open `dist/index.html` directly. Opening the file directly requires browser support for storage on `file://` pages and an API service that permits their cross-origin requests.
 
+## Android
+
+The Android app uses [Capacitor](https://capacitorjs.com/) to load `dist/` in the system WebView, sharing all code with the web version. Building it also requires JDK 21 and the Android SDK (Platform 36); point to the SDK with `ANDROID_HOME` or `android/local.properties`:
+
+```sh
+pnpm android:debug     # debug build in android/app/build/outputs/apk/debug/
+pnpm android:release   # release build in android/app/build/outputs/apk/release/
+```
+
+- The version comes from `package.json`. Release signing reads `ANDROID_KEYSTORE_PATH`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`; without them the APK is unsigned.
+- Pushing a `v*` tag or running the [Android workflow](.github/workflows/android.yml) manually builds a release APK. Store the keystore as Base64 in the `ANDROID_KEYSTORE_BASE64` secret and the other three values in secrets with the same names.
+- The app runs at the `https://localhost` origin, so its local data is separate from the browser version. Downloads, exports, and opening attachments go through the system share sheet; external links open in the system browser.
+- The package name `com.example.chatdemo` is a placeholder. Change it in `capacitor.config.ts` and `android/app` before distributing the app.
+
 ## Features
 
 - Multiple conversations with automatic titles, renaming, and deletion; edit prompts, regenerate replies, and switch between message branches.
@@ -45,13 +59,15 @@ Settings → Data → Delete all chats clears all local conversations, original 
 
 ## Development
 
-| Command       | Description                  |
-| ------------- | ---------------------------- |
-| `pnpm dev`    | Start the development server |
-| `pnpm build`  | Build into `dist/`           |
-| `pnpm type`   | Run TypeScript type checks   |
-| `pnpm lint`   | Lint with oxlint             |
-| `pnpm format` | Format with oxfmt            |
+| Command              | Description                       |
+| -------------------- | --------------------------------- |
+| `pnpm dev`           | Start the development server      |
+| `pnpm build`         | Build into `dist/`                |
+| `pnpm type`          | Run TypeScript type checks        |
+| `pnpm lint`          | Lint with oxlint                  |
+| `pnpm format`        | Format with oxfmt                 |
+| `pnpm android:debug` | Build an Android debug APK        |
+| `pnpm android:open`  | Open `android/` in Android Studio |
 
 [rspack.config.ts](rspack.config.ts) uses `https://api.deepseek.com` by default. Use `createConfig({ apiOrigin, devServer })` to customize the API origin and development server proxy.
 

@@ -7,6 +7,7 @@ import {
   type MutableRefObject,
   type RefObject,
 } from 'react'
+import { useBackClose } from '../../app/backButton.js'
 
 /** 浮层与视口边缘的最小间距 */
 export const VIEWPORT_PADDING = 8
@@ -210,6 +211,7 @@ export const useDismiss = (
   onDismissRef.current = onDismiss
   const refsRef = useRef(refs)
   refsRef.current = refs
+  useBackClose(open, onDismiss)
 
   useEffect(() => {
     if (!open) {

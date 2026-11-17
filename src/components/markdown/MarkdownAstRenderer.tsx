@@ -83,7 +83,7 @@ const Table = memo(function Table({ node }: { node: TableNode }) {
   const t = useTranslate()
   const columnCount = node.children[0]?.children.length
   const exportTable = () => {
-    downloadText(
+    void downloadText(
       `\uFEFF${tableToCsv(node)}`,
       `deepseek-table-${Date.now()}.csv`,
       'text/csv;charset=utf-8'

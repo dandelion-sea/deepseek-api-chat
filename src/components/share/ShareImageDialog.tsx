@@ -115,7 +115,7 @@ const ShareImageDialogContent = ({ target }: { target: ShareImageTarget }) => {
     setBusy(true)
     try {
       const blob = await createBlob()
-      downloadBlob(blob, `deepseek-share-${Date.now()}.png`)
+      await downloadBlob(blob, `deepseek-share-${Date.now()}.png`)
     } catch {
       showToast({ key: 'imageExportFailed', type: 'error' })
     } finally {

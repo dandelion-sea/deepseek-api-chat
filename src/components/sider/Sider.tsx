@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useMemo, useState } from 'react'
+import { useBackClose } from '../../app/backButton.js'
 import { useTranslate } from '../../i18n/index.js'
 import {
   IconPanelLeftOutline16,
@@ -318,6 +319,7 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
 /** 移动端抽屉：浮在页面上方，点空白区域关闭。 */
 export const MobileSider = () => {
   const open = useMobileSider((state) => state.open)
+  useBackClose(open, closeMobileSider)
   if (!open) {
     return null
   }
