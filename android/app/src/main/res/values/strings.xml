@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Chat Demo</string>
-    <string name="title_activity_main">Chat Demo</string>
-    <string name="package_name">com.example.chatdemo</string>
-    <string name="custom_url_scheme">com.example.chatdemo</string>
+    <string name="app_name">DeepSeek API Chat</string>
+    <string name="title_activity_main">DeepSeek API Chat</string>
+    <string name="package_name">io.github.dandelionsea.deepseekapichat</string>
+    <string name="custom_url_scheme">io.github.dandelionsea.deepseekapichat</string>
 </resources>

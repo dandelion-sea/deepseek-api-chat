@@ -1,18 +1,18 @@
-# chat-demo
+# deepseek-api-chat
 
 English | [简体中文](README.zh-CN.md)
 
-A static chat demo powered by the DeepSeek API. No application backend is required: the browser connects directly to the configured API service.
+A static chat demo powered by the DeepSeek API, forked from [deepseek-ai/chat-demo](https://github.com/deepseek-ai/chat-demo), with an Android app. No application backend is required: the browser connects directly to the configured API service.
 
-You can [try the app online](https://deepseek-ai.github.io/chat-demo/) or download the archive from [Releases](https://github.com/deepseek-ai/deepseek-chat-demo/releases), extract it, and double-click `index.html` to use it locally without installation or a build. Enter your API key in Settings before your first chat.
+Download the APK or the web archive from [Releases](https://github.com/dandelion-sea/deepseek-api-chat/releases). Extract the archive and double-click `index.html` to use it locally without installation or a build. Enter your API key in Settings before your first chat.
 
 ## Getting started
 
 Install Node.js 22.12+ and pnpm, then run:
 
 ```sh
-git clone https://github.com/deepseek-ai/chat-demo.git
-cd chat-demo
+git clone https://github.com/dandelion-sea/deepseek-api-chat.git
+cd deepseek-api-chat
 pnpm install
 pnpm dev
 ```
@@ -39,7 +39,7 @@ pnpm android:release   # release build in android/app/build/outputs/apk/release/
 - The version comes from `package.json`. Release signing reads `ANDROID_KEYSTORE_PATH`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`; without them the APK is unsigned.
 - Pushing a `v*` tag runs the [Android workflow](.github/workflows/android.yml), which builds a release APK and publishes it with a zipped web build to GitHub Releases. Manual runs only upload a workflow artifact (kept for 90 days). Store the keystore as Base64 in the `ANDROID_KEYSTORE_BASE64` secret and the other three values in secrets with the same names.
 - The app runs at the `https://localhost` origin, so its local data is separate from the browser version. Downloads, exports, and opening attachments go through the system share sheet; external links open in the system browser.
-- The package name `com.example.chatdemo` is a placeholder. Change it in `capacitor.config.ts` and `android/app` before distributing the app.
+- The application ID is `io.github.dandelionsea.deepseekapichat`. Changing it makes Android treat the app as a different one, so installed copies cannot be upgraded.
 
 ## Features
 

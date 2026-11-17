@@ -1,18 +1,18 @@
-# chat-demo
+# deepseek-api-chat
 
 [English](README.md) | 简体中文
 
-基于 DeepSeek API 的静态聊天示例。无需应用后端，浏览器直接请求配置的 API 服务。
+基于 DeepSeek API 的静态聊天示例，fork 自 [deepseek-ai/chat-demo](https://github.com/deepseek-ai/chat-demo)，并提供 Android 版。无需应用后端，浏览器直接请求配置的 API 服务。
 
-点击 [在线体验](https://deepseek-ai.github.io/chat-demo/) 即可使用，也可以前往 [Releases](https://github.com/deepseek-ai/deepseek-chat-demo/releases) 下载压缩包，解压后双击 `index.html` 在本地使用，无需安装或构建。首次使用时，请在设置中填写 API Key。
+前往 [Releases](https://github.com/dandelion-sea/deepseek-api-chat/releases) 下载 APK 或网页版压缩包；压缩包解压后双击 `index.html` 即可在本地使用，无需安装或构建。首次使用时，请在设置中填写 API Key。
 
 ## 运行
 
 准备 Node.js 22.12+ 和 pnpm：
 
 ```sh
-git clone https://github.com/deepseek-ai/chat-demo.git
-cd chat-demo
+git clone https://github.com/dandelion-sea/deepseek-api-chat.git
+cd deepseek-api-chat
 pnpm install
 pnpm dev
 ```
@@ -39,7 +39,7 @@ pnpm android:release   # 发布包，输出到 android/app/build/outputs/apk/rel
 - 版本号取自 `package.json`。发布包签名读取环境变量 `ANDROID_KEYSTORE_PATH`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD`，未设置时产出未签名 APK。
 - 推送 `v*` 标签时 [Android 工作流](.github/workflows/android.yml) 会构建发布包，并连同网页版 zip 发布到 GitHub Release；手动触发只上传构建产物（保留 90 天）。签名用的 keystore 以 Base64 存入 Secret `ANDROID_KEYSTORE_BASE64`，其余三项存入同名 Secret。
 - App 页面源为 `https://localhost`，本地数据与浏览器版互不相通。下载、导出和打开附件会调起系统分享面板，外部链接在系统浏览器中打开。
-- 包名 `com.example.chatdemo` 仅为示例，分发前请在 `capacitor.config.ts` 和 `android/app` 中改为自己的。
+- 应用 ID 为 `io.github.dandelionsea.deepseekapichat`。修改后 Android 会视为另一个应用，已安装的版本无法覆盖升级。
 
 ## 功能
 

@@ -1,4 +1,4 @@
-package com.example.chatdemo;
+package io.github.dandelionsea.deepseekapichat;
 
 import com.getcapacitor.BridgeActivity;
 

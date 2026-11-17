@@ -6,13 +6,13 @@ def appVersionCode = appVersion.tokenize('.-')[0..2].inject(0) { code, part -> c
 // 设置 ANDROID_KEYSTORE_PATH 等环境变量时签名 release 包，否则产出未签名 APK
 def keystorePath = System.getenv('ANDROID_KEYSTORE_PATH')
 
-base.archivesName = "chat-demo-${appVersion}"
+base.archivesName = "deepseek-api-chat-${appVersion}"
 
 android {
-    namespace = "com.example.chatdemo"
+    namespace = "io.github.dandelionsea.deepseekapichat"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.example.chatdemo"
+        applicationId "io.github.dandelionsea.deepseekapichat"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode appVersionCode
