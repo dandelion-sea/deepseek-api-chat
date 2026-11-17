@@ -7,6 +7,7 @@ import {
 } from '../../services/chat/branches.js'
 import { selectMessageVersion } from '../../services/chat/store.js'
 import type { Session } from '../../services/chat/types.js'
+import { clearChatSearchFocus, useChatSearch } from '../chatSearch/chatSearchState.js'
 import { closeSearchPanel } from '../search/searchPanelState.js'
 import { AssistantMessage } from './AssistantMessage.js'
 import { ScrollToBottomContext } from './scrollContext.js'
@@ -48,6 +49,7 @@ export const MessageList = ({
   const stickyRef = useRef(true)
   const scrollTopRef = useRef(0)
   const restoreScrollRef = useRef<{ messageId: string; top: number } | null>(null)
+  const searchFocus = useChatSearch((state) => state.focus)
   const messages = getVisibleMessages(session)
   const [previousVersions, setPreviousVersions] = useState(() =>
     buildMessageVersions(session, new Map())
@@ -138,6 +140,31 @@ export const MessageList = ({
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
   }, [isMobile, scrollToBottom])
+
+  useLayoutEffect(() => {
+    if (!searchFocus || searchFocus.sessionId !== session.id) {
+      return
+    }
+    const target = scrollRef.current?.querySelector<HTMLElement>(
+      `[data-message-id="${CSS.escape(searchFocus.messageId)}"]`
+    )
+    if (!target) {
+      return
+    }
+    stickyRef.current = false
+    target.scrollIntoView({ block: 'center' })
+    target.classList.add('ds-search-target')
+    const timer = window.setTimeout(() => target.classList.remove('ds-search-target'), 2000)
+    target.addEventListener(
+      'animationend',
+      () => {
+        window.clearTimeout(timer)
+        target.classList.remove('ds-search-target')
+      },
+      { once: true }
+    )
+    clearChatSearchFocus()
+  }, [searchFocus, session.id])
 
   const lastIndex = messages.length - 1
   const uploadRetryId = getUploadRetryId(messages, streaming)

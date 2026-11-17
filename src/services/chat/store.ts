@@ -304,6 +304,9 @@ export const initChat = (): Promise<void> => {
       const summaries = await db.loadSessionSummaries()
       if (epoch === historyEpoch) {
         set({ ready: true, sessions: sortSessions(summaries) })
+        void db
+          .ensureMessageIndex()
+          .catch(db.reportStorageError('build message search index'))
       }
     } catch (error) {
       if (epoch === historyEpoch) {

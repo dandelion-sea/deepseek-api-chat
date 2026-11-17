@@ -43,6 +43,21 @@ body.change-theme *::after {
   transition: none !important;
 }
 
+.ds-search-target {
+  border-radius: 16px;
+  animation: ds-search-target 1.6s ease-out;
+}
+
+@keyframes ds-search-target {
+  0% {
+    box-shadow: 0 0 0 3px var(--dsw-alias-brand-primary);
+  }
+
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
 @media not all and (min-width: 768px) {
   html,
   body,
