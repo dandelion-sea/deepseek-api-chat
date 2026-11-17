@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { useAnchoredPosition, useDismiss } from './anchored.js'
+import { useAnchoredPosition, useDismiss, type Align, type Side } from './anchored.js'
 import styles from './Menu.module.css'
 
 export type MenuOption = {
@@ -12,27 +12,33 @@ export type MenuOption = {
   onSelect: () => void
 }
 
-/** 点击触发，向下展开；点外部或 Esc 关闭 */
+/** 点击触发，默认向下展开；点外部或 Esc 关闭 */
 export const Menu = ({
   options,
   children,
+  side = 'bottom',
+  align = 'start',
+  anchorClassName,
 }: {
   options: MenuOption[]
-  children: (props: { open: boolean; toggle: () => void }) => ReactNode
+  children: (props: { open: boolean; toggle: () => void; show: () => void }) => ReactNode
+  side?: Side
+  align?: Align
+  anchorClassName?: string
 }) => {
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
-  // 左侧对齐并再左移 5px，让菜单文字与触发元素图标对齐
+  // 左侧对齐时再左移 5px，让菜单文字与触发元素图标对齐
   const { anchorRef, floatingRef, position } = useAnchoredPosition<HTMLSpanElement, HTMLDivElement>(
     open,
-    { align: 'start', alignOffset: -5, offset: 4 }
+    { side, align, alignOffset: align === 'start' ? -5 : 0, offset: 4 }
   )
   useDismiss(open, [anchorRef, floatingRef], close)
 
   return (
     <>
-      <span ref={anchorRef} className={styles.anchor}>
-        {children({ open, toggle: () => setOpen((value) => !value) })}
+      <span ref={anchorRef} className={clsx(styles.anchor, anchorClassName)}>
+        {children({ open, toggle: () => setOpen((value) => !value), show: () => setOpen(true) })}
       </span>
       {open
         ? createPortal(

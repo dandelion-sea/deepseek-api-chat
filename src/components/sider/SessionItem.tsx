@@ -1,18 +1,20 @@
 import clsx from 'clsx'
-import { memo, useState } from 'react'
+import { memo, useState, type MouseEvent, type ReactNode } from 'react'
+import { useIsMobile } from '../../app/viewport.js'
 import { useTranslate } from '../../i18n/index.js'
 import {
   IconCheckOutline16,
   IconEditOutline16,
   IconEllipsisOutline16,
   IconImageOutline16,
+  IconListSelectOutline16,
   IconPinOutline16,
   IconTrashOutline16,
 } from '../base/icons.js'
 import { renameSession, selectSession, setSessionPinned } from '../../services/chat/store.js'
 import type { SessionSummary } from '../../services/chat/types.js'
 import { IconButton } from '../base/IconButton.js'
-import { Menu } from '../base/Menu.js'
+import { Menu, type MenuOption } from '../base/Menu.js'
 import { openShareImage } from '../share/shareImageState.js'
 import { closeMobileSider } from './mobileSiderState.js'
 import styles from './SessionItem.module.css'
@@ -24,6 +26,7 @@ export const SessionItem = memo(function SessionItem({
   selectionMode = false,
   selected = false,
   onToggleSelected,
+  onStartSelection,
 }: {
   session: SessionSummary
   active: boolean
@@ -31,8 +34,11 @@ export const SessionItem = memo(function SessionItem({
   selectionMode?: boolean
   selected?: boolean
   onToggleSelected?: () => void
+  /** 从菜单进入多选，并选中这一项 */
+  onStartSelection?: () => void
 }) {
   const t = useTranslate()
+  const isMobile = useIsMobile()
   const [editing, setEditing] = useState(false)
   const displayTitle = session.title || t('untitledChat')
 
@@ -70,18 +76,68 @@ export const SessionItem = memo(function SessionItem({
     closeMobileSider()
   }
 
-  return (
+  const options: MenuOption[] = [
+    {
+      key: 'rename',
+      label: t('sessionItemMenuRenameOption'),
+      icon: <IconEditOutline16 />,
+      onSelect: () => setEditing(true),
+    },
+    {
+      key: 'pin',
+      label: t(session.pinned ? 'sessionUnpinAction' : 'sessionPinAction'),
+      icon: <IconPinOutline16 />,
+      onSelect: () => setSessionPinned(session.id, !session.pinned),
+    },
+    ...(onStartSelection
+      ? [
+          {
+            key: 'select',
+            label: t('multiSelect'),
+            icon: <IconListSelectOutline16 />,
+            onSelect: onStartSelection,
+          },
+        ]
+      : []),
+    {
+      key: 'share',
+      label: t('shareLongImage'),
+      icon: <IconImageOutline16 />,
+      onSelect: () => openShareImage({ sessionId: session.id }),
+    },
+    {
+      key: 'delete',
+      label: t('delete'),
+      icon: <IconTrashOutline16 />,
+      danger: true,
+      onSelect: onDelete,
+    },
+  ]
+
+  const renderItem = ({
+    menuOpen = false,
+    action,
+    onClick = activate,
+    onContextMenu,
+  }: {
+    menuOpen?: boolean
+    action: ReactNode
+    onClick?: () => void
+    onContextMenu?: (event: MouseEvent) => void
+  }) => (
     <div
       className={clsx(
         styles.item,
         active && styles.active,
         selected && styles.selected,
-        selectionMode && styles.selectable
+        selectionMode && styles.selectable,
+        menuOpen && styles.pressed
       )}
       role={selectionMode ? 'checkbox' : undefined}
       aria-checked={selectionMode ? selected : undefined}
       tabIndex={selectionMode ? 0 : undefined}
-      onClick={activate}
+      onClick={onClick}
+      onContextMenu={onContextMenu}
       onKeyDown={
         selectionMode
           ? (event) => {
@@ -106,43 +162,42 @@ export const SessionItem = memo(function SessionItem({
         ) : null}
         <span className={styles.titleText}>{displayTitle}</span>
       </div>
-      {selectionMode ? null : (
+      {action ? (
         <div className={styles.action} onClick={(event) => event.stopPropagation()}>
-          <Menu
-            options={[
-              {
-                key: 'pin',
-                label: t(session.pinned ? 'sessionUnpinAction' : 'sessionPinAction'),
-                icon: <IconPinOutline16 />,
-                onSelect: () => setSessionPinned(session.id, !session.pinned),
-              },
-              {
-                key: 'rename',
-                label: t('sessionItemMenuRenameOption'),
-                icon: <IconEditOutline16 />,
-                onSelect: () => setEditing(true),
-              },
-              {
-                key: 'share',
-                label: t('shareLongImage'),
-                icon: <IconImageOutline16 />,
-                onSelect: () => openShareImage({ sessionId: session.id }),
-              },
-              {
-                key: 'delete',
-                label: t('delete'),
-                icon: <IconTrashOutline16 />,
-                danger: true,
-                onSelect: onDelete,
-              },
-            ]}
-          >
-            {({ toggle }) => (
-              <IconButton icon={<IconEllipsisOutline16 />} aria-label={t('more')} onClick={toggle} />
-            )}
-          </Menu>
+          {action}
         </div>
-      )}
+      ) : null}
     </div>
   )
+
+  const moreButton = (toggle: () => void) => (
+    <IconButton icon={<IconEllipsisOutline16 />} aria-label={t('more')} onClick={toggle} />
+  )
+
+  // 移动端按官方 App：只有当前会话显示「更多」，长按任意会话弹出菜单
+  if (isMobile) {
+    return (
+      <Menu options={options} side="top" align="end" anchorClassName={styles.menuAnchor}>
+        {({ open, toggle, show }) =>
+          renderItem({
+            menuOpen: open,
+            action: !selectionMode && active ? moreButton(toggle) : null,
+            onClick: open ? toggle : activate,
+            onContextMenu: (event) => {
+              event.preventDefault()
+              if (!selectionMode) {
+                show()
+              }
+            },
+          })
+        }
+      </Menu>
+    )
+  }
+
+  return renderItem({
+    action: selectionMode ? null : (
+      <Menu options={options}>{({ toggle }) => moreButton(toggle)}</Menu>
+    ),
+  })
 })

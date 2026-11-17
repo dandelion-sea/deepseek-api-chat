@@ -45,3 +45,29 @@
     background-color: var(--dsw-alias-interactive-bg-hover-danger);
   }
 }
+
+/* 移动端按官方 App：更大的触控区，选项间加分隔线 */
+@media not all and (min-width: 768px) {
+  .menu {
+    min-width: 200px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 16px;
+  }
+
+  .option {
+    gap: 12px;
+    padding: 11px 20px;
+    border-radius: 0;
+    font-size: 16px;
+
+    & + & {
+      border-top: 1px solid var(--dsw-alias-border-l1);
+    }
+  }
+
+  .icon svg {
+    width: 20px;
+    height: 20px;
+  }
+}

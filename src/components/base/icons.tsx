@@ -554,6 +554,33 @@ export const IconSelectOutline16 = () => (
   </svg>
 )
 
+/** 多选：两个圆圈各接一条横线 */
+export const IconListSelectOutline16 = () => (
+  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="3.6" cy="4.4" r="2" stroke="currentColor" strokeWidth="1.3" />
+    <circle cx="3.6" cy="11.6" r="2" stroke="currentColor" strokeWidth="1.3" />
+    <path
+      d="M8.4 4.4h6.1M8.4 11.6h6.1"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+    />
+  </svg>
+)
+
+/** 默认头像：圆底上的人形剪影 */
+export const IconAvatarFill = () => (
+  <svg width={36} height={36} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="18" cy="18" r="18" fill="currentColor" opacity="0.14" />
+    <circle cx="18" cy="14" r="6" fill="currentColor" opacity="0.42" />
+    <path
+      d="M6.5 29.6C8.6 24.9 12.9 22.4 18 22.4C23.1 22.4 27.4 24.9 29.5 29.6C26.5 32.3 22.5 34 18 34C13.5 34 9.5 32.3 6.5 29.6Z"
+      fill="currentColor"
+      opacity="0.42"
+    />
+  </svg>
+)
+
 export const IconImageOutline16 = () => (
   <svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect

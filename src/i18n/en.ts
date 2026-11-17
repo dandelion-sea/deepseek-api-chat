@@ -35,6 +35,8 @@ export const en = {
   selectedSessions: '{count} selected',
   selectAllSessions: 'Select all',
   deselectAllSessions: 'Deselect all',
+  multiSelect: 'Select',
+  alreadyInNewChat: 'Already in a new chat',
   deleteSessionsModalTitle: 'Delete selected chats',
   deleteSessionsModalDescription:
     'The selected chats and their uploaded files will be permanently deleted and cannot be recovered. Delete {count} chats?',

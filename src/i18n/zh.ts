@@ -31,6 +31,8 @@ export const zh = {
   selectedSessions: '已选择 {count} 个',
   selectAllSessions: '全选',
   deselectAllSessions: '取消全选',
+  multiSelect: '多选',
+  alreadyInNewChat: '已经在新对话中',
   deleteSessionsModalTitle: '删除所选对话',
   deleteSessionsModalDescription: '删除后，所选对话及其中上传的文件将不可恢复。确认删除 {count} 个对话吗？',
   sessionsPinned: '已置顶 {count} 个对话',

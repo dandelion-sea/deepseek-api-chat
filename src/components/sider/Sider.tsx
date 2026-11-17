@@ -3,13 +3,19 @@ import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { useBackClose } from '../../app/backButton.js'
 import { useTranslate } from '../../i18n/index.js'
 import {
+  IconAvatarFill,
+  IconCloseOutline16,
+  IconEllipsisOutline16,
+  IconListSelectOutline16,
   IconPanelLeftOutline16,
+  IconPinOutline16,
   IconSearchOutline16,
   IconSelectOutline16,
   IconSettingsOutline16,
+  IconTrashOutline16,
   NewChatIcon,
 } from '../base/icons.js'
-import { setSiderCollapsed } from '../../services/settings.js'
+import { setSiderCollapsed, useSettings } from '../../services/settings.js'
 import { groupSessions } from '../../services/chat/sessionGroups.js'
 import {
   newChat,
@@ -29,7 +35,14 @@ import { closeMobileSider, useMobileSider } from './mobileSiderState.js'
 import { SessionItem } from './SessionItem.js'
 import styles from './Sider.module.css'
 
-/** 展开的侧边栏：名称与收起按钮、开启新对话、按时间分组的会话列表、底部设置；移动端放在抽屉里，收起按钮关闭抽屉 */
+/** API Key 只露出首尾，作为底部「账号」的名称 */
+const maskApiKey = (apiKey: string | null) =>
+  apiKey && apiKey.length > 8 ? `${apiKey.slice(0, 3)}****${apiKey.slice(-4)}` : null
+
+/**
+ * 展开的侧边栏：名称与收起按钮、开启新对话、按时间分组的会话列表、底部设置。
+ * 移动端放在抽屉里，布局按官方 App：顶部搜索框、首个分组标题右侧进入多选、底部头像与设置入口
+ */
 export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   const t = useTranslate()
   const sessions = useChatStore((state) => state.sessions)
@@ -46,6 +59,10 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   const selectedCount = selectedIds.length
   const allSelected = sessions.length > 0 && sessions.every((session) => selected.has(session.id))
   const drawerOpen = useMobileSider((state) => state.open)
+  const accountName = maskApiKey(useSettings((state) => state.apiKey))
+  const allSelectedPinned =
+    selectedCount > 0 &&
+    sessions.every((session) => !selected.has(session.id) || session.pinned === true)
 
   const exitSelection = () => {
     setSelecting(false)
@@ -63,6 +80,11 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
       }
       return next
     })
+  }
+
+  const startSelection = (id?: string) => {
+    setSelecting(true)
+    setSelected(new Set(id === undefined ? [] : [id]))
   }
 
   const toggleSelectAll = () => {
@@ -138,59 +160,97 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
 
   return (
     <div className={clsx(styles.sider, mobile && styles.mobile)}>
-      <div className={styles.top}>
-        <div className={styles.appName}>{t('appName')}</div>
-        <div className={styles.topActions}>
-          <IconButton
-            size="m"
-            icon={<IconSearchOutline16 />}
-            tooltip={t('chatSearchTitle')}
-            tooltipPlacement="bottom"
-            onClick={openChatSearch}
-          />
-          <IconButton
-            size="m"
-            icon={<IconPanelLeftOutline16 />}
-            tooltip={t('collapseSiderbarButton')}
-            tooltipPlacement="bottom"
-            onClick={() => (mobile ? closeMobileSider() : setSiderCollapsed(true))}
-          />
-        </div>
-      </div>
-      {selecting ? (
-        <div className={styles.selectionBar}>
-          <span className={styles.selectionCount}>
-            {t('selectedSessions', { count: selectedCount })}
-          </span>
-          <span className={styles.selectionButtons}>
+      {mobile ? (
+        selecting ? (
+          <div className={styles.mobileSelectTop}>
+            <span className={styles.mobileSelectTitle}>{t('selectChats')}</span>
             <button type="button" className={styles.selectAll} onClick={toggleSelectAll}>
               {t(allSelected ? 'deselectAllSessions' : 'selectAllSessions')}
             </button>
-            <button type="button" className={styles.selectAll} onClick={exitSelection}>
-              {t('cancelSelection')}
+            <button
+              type="button"
+              className={styles.mobileSelectClose}
+              aria-label={t('cancelSelection')}
+              onClick={exitSelection}
+            >
+              <IconCloseOutline16 />
             </button>
-          </span>
-        </div>
+          </div>
+        ) : (
+          <button type="button" className={styles.searchPill} onClick={openChatSearch}>
+            <IconSearchOutline16 />
+            <span className={styles.searchPillText}>{t('chatSearchPlaceholder')}</span>
+          </button>
+        )
       ) : (
-        <button
-          type="button"
-          className={styles.newChat}
-          onClick={() => {
-            newChat()
-            closeMobileSider()
-          }}
-        >
-          <span className={styles.newChatIcon}>
-            <NewChatIcon />
-          </span>
-          {t('newChat')}
-        </button>
+        <>
+          <div className={styles.top}>
+            <div className={styles.appName}>{t('appName')}</div>
+            <div className={styles.topActions}>
+              <IconButton
+                size="m"
+                icon={<IconSearchOutline16 />}
+                tooltip={t('chatSearchTitle')}
+                tooltipPlacement="bottom"
+                onClick={openChatSearch}
+              />
+              <IconButton
+                size="m"
+                icon={<IconPanelLeftOutline16 />}
+                tooltip={t('collapseSiderbarButton')}
+                tooltipPlacement="bottom"
+                onClick={() => (mobile ? closeMobileSider() : setSiderCollapsed(true))}
+              />
+            </div>
+          </div>
+          {selecting ? (
+            <div className={styles.selectionBar}>
+              <span className={styles.selectionCount}>
+                {t('selectedSessions', { count: selectedCount })}
+              </span>
+              <span className={styles.selectionButtons}>
+                <button type="button" className={styles.selectAll} onClick={toggleSelectAll}>
+                  {t(allSelected ? 'deselectAllSessions' : 'selectAllSessions')}
+                </button>
+                <button type="button" className={styles.selectAll} onClick={exitSelection}>
+                  {t('cancelSelection')}
+                </button>
+              </span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className={styles.newChat}
+              onClick={() => {
+                newChat()
+                closeMobileSider()
+              }}
+            >
+              <span className={styles.newChatIcon}>
+                <NewChatIcon />
+              </span>
+              {t('newChat')}
+            </button>
+          )}
+        </>
       )}
       <div className={styles.listWrap}>
         <div className={styles.list}>
-          {groups.map((group) => (
+          {groups.map((group, index) => (
             <div key={group.key} className={styles.section}>
-              <div className={styles.sectionHeader}>{group.label}</div>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionLabel}>{group.label}</span>
+                {mobile && !selecting && index === 0 ? (
+                  <button
+                    type="button"
+                    className={styles.sectionSelect}
+                    aria-label={t('selectChats')}
+                    onClick={() => startSelection()}
+                  >
+                    <IconListSelectOutline16 />
+                  </button>
+                ) : null}
+              </div>
               {group.sessions.map((session) => (
                 <SessionItem
                   key={session.id}
@@ -199,6 +259,7 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
                   selectionMode={selecting}
                   selected={selected.has(session.id)}
                   onToggleSelected={() => toggleSelected(session.id)}
+                  onStartSelection={() => startSelection(session.id)}
                   onDelete={() => setDeleting(session)}
                 />
               ))}
@@ -207,7 +268,46 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
         </div>
       </div>
       <div className={styles.bottom}>
-        {selecting ? (
+        {mobile ? (
+          selecting ? (
+            <div className={styles.mobileBatchBar}>
+              <button
+                type="button"
+                className={styles.mobileBatchAction}
+                disabled={selectedCount === 0}
+                onClick={() => pinSelected(!allSelectedPinned)}
+              >
+                <IconPinOutline16 />
+                {t(allSelectedPinned ? 'sessionUnpinAction' : 'sessionPinAction')}
+              </button>
+              <span className={styles.mobileBatchDivider} />
+              <button
+                type="button"
+                className={styles.mobileBatchAction}
+                disabled={selectedCount === 0}
+                onClick={() => setBatchDeleteOpen(true)}
+              >
+                <IconTrashOutline16 />
+                {t('delete')}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className={styles.account}
+              aria-label={t('settings')}
+              onClick={() => openSettings('general')}
+            >
+              <span className={styles.avatar}>
+                <IconAvatarFill />
+              </span>
+              <span className={styles.accountName}>{accountName ?? t('settings')}</span>
+              <span className={styles.accountMore}>
+                <IconEllipsisOutline16 />
+              </span>
+            </button>
+          )
+        ) : selecting ? (
           <div className={styles.batchBar}>
             <button
               type="button"
